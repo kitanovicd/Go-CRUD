@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/initializers"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/models"
@@ -13,7 +15,12 @@ type CompanyBody struct {
 
 func CreateCompany(c *gin.Context) {
 	var body CompanyBody
-	c.Bind(&body)
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid body",
+		})
+		return
+	}
 
 	company := models.Company{
 		Name:          body.Name,
@@ -26,7 +33,7 @@ func CreateCompany(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"company": company,
 	})
 }
@@ -40,7 +47,7 @@ func GetCompanies(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"companies": companies,
 	})
 }
@@ -54,7 +61,7 @@ func GetCompany(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"company": company,
 	})
 }
@@ -69,19 +76,33 @@ func UpdateCompany(c *gin.Context) {
 	}
 
 	var body CompanyBody
-	c.Bind(&body)
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid body",
+		})
+		return
+	}
 
-	initializers.DB.Model(&company).Updates(models.Company{
+	result = initializers.DB.Model(&company).Updates(models.Company{
 		Name:          body.Name,
 		ContactPerson: body.ContactPerson,
 	})
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"company": company,
 	})
 }
 
 func DeleteCompany(c *gin.Context) {
-	initializers.DB.Delete(&models.Company{}, c.Param("id"))
-	c.Status(200)
+	result := initializers.DB.Delete(&models.Company{}, c.Param("id"))
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }

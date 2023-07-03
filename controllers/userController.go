@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/initializers"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/models"
@@ -16,7 +18,12 @@ type UserBody struct {
 
 func CreateUser(c *gin.Context) {
 	var body UserBody
-	c.Bind(&body)
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid body",
+		})
+		return
+	}
 
 	user := models.User{
 		Name:      body.Name,
@@ -32,7 +39,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
 }
@@ -46,7 +53,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"users": users,
 	})
 }
@@ -60,7 +67,7 @@ func GetUsersByCompany(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"users": users,
 	})
 }
@@ -74,7 +81,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
 }
@@ -89,22 +96,36 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	var body UserBody
-	c.Bind(&body)
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid body",
+		})
+		return
+	}
 
-	initializers.DB.Model(&user).Updates(models.User{
+	result = initializers.DB.Model(&user).Updates(models.User{
 		Name:      body.Name,
 		Surname:   body.Surname,
 		Email:     body.Email,
 		Phone:     body.Phone,
 		CompanyID: user.CompanyID,
 	})
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
 }
 
 func DeleteUser(c *gin.Context) {
-	initializers.DB.Delete(&models.User{}, c.Param("id"))
-	c.Status(200)
+	result := initializers.DB.Delete(&models.User{}, c.Param("id"))
+	if result.Error != nil {
+		c.Status(400)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
