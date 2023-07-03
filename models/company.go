@@ -6,4 +6,5 @@ type Company struct {
 	gorm.Model
 	Name          string
 	ContactPerson string
+	Users         []User
 }

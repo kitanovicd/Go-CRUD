@@ -21,5 +21,12 @@ func main() {
 	r.GET("/companies", controllers.GetCompanies)
 	r.DELETE("/company/:id", controllers.DeleteCompany)
 
+	r.POST("/user", controllers.CreateUser)
+	r.PUT("/user/:id", controllers.UpdateUser)
+	r.GET("/user/:id", controllers.GetUser)
+	r.GET("/users", controllers.GetUsers)
+	r.GET("/users/:company_id", controllers.GetUsersByCompany)
+	r.DELETE("/user/:id", controllers.DeleteUser)
+
 	r.Run()
 }
