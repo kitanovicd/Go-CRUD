@@ -2,25 +2,26 @@ package controllers
 
 import (
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/initializers"
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserBody struct {
-	Name      string
-	Surname   string
-	Username  string
-	Password  string
-	Email     string
-	Phone     string
-	CompanyID uint
-}
-
 func SignUp(c *gin.Context) {
-	var body UserBody
+	var body struct {
+		Name      string
+		Surname   string
+		Username  string
+		Password  string
+		Email     string
+		Phone     string
+		CompanyID uint
+	}
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid body",
@@ -60,7 +61,7 @@ func SignUp(c *gin.Context) {
 	})
 }
 
-func SignIn(c *gin.Context) {
+func Login(c *gin.Context) {
 	var body struct {
 		Username string
 		Password string
@@ -90,6 +91,23 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to create token",
+		})
+		return
+	}
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func GetUsers(c *gin.Context) {
@@ -151,7 +169,15 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	var body UserBody
+	var body struct {
+		Name      string
+		Surname   string
+		Username  string
+		Password  string
+		Email     string
+		Phone     string
+		CompanyID uint
+	}
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid body",
