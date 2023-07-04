@@ -16,19 +16,19 @@ func main() {
 
 	r := gin.Default()
 
-	r.POST("/company", middleware.RequireAuth, controllers.CreateCompany)
-	r.PUT("/company/:id", middleware.RequireAuth, controllers.UpdateCompany)
-	r.GET("/company/:id", middleware.RequireAuth, controllers.GetCompany)
+	r.POST("/companies", middleware.RequireAuth, controllers.CreateCompany)
+	r.PUT("/companies/:id", middleware.RequireAuth, controllers.UpdateCompany)
+	r.GET("/companies/:id", middleware.RequireAuth, controllers.GetCompany)
 	r.GET("/companies", middleware.RequireAuth, controllers.GetCompanies)
-	r.DELETE("/company/:id", middleware.RequireAuth, controllers.DeleteCompany)
+	r.DELETE("/companies/:id", middleware.RequireAuth, controllers.DeleteCompany)
 
 	r.POST("/signup", controllers.SignUp)
 	r.POST("/login", controllers.Login)
-	r.PUT("/user/:id", middleware.RequireAuth, controllers.UpdateUser)
-	r.GET("/user/:id", middleware.RequireAuth, controllers.GetUser)
+	r.PUT("/users/:id", middleware.RequireAuth, controllers.UpdateUser)
+	r.GET("/users/:id", middleware.RequireAuth, controllers.GetUser)
 	r.GET("/users", middleware.RequireAuth, controllers.GetUsers)
 	r.GET("/users/:company_id", middleware.RequireAuth, controllers.GetUsersByCompany)
-	r.DELETE("/user/:id", middleware.RequireAuth, controllers.DeleteUser)
+	r.DELETE("/users/:id", middleware.RequireAuth, controllers.DeleteUser)
 
 	r.Run()
 }
