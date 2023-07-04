@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type Company struct {
 	gorm.Model
-	Name          string
-	ContactPerson string
-	Users         []User
+	Name  string
+	Users []User
 }

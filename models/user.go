@@ -6,7 +6,9 @@ type User struct {
 	gorm.Model
 	Name      string
 	Surname   string
-	Email     string
+	Username  string
+	Password  string
+	Email     string `gorm:"unique"`
 	Phone     string
 	CompanyID uint
 }

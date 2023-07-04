@@ -9,8 +9,7 @@ import (
 )
 
 type CompanyBody struct {
-	Name          string
-	ContactPerson string
+	Name string
 }
 
 func CreateCompany(c *gin.Context) {
@@ -23,13 +22,14 @@ func CreateCompany(c *gin.Context) {
 	}
 
 	company := models.Company{
-		Name:          body.Name,
-		ContactPerson: body.ContactPerson,
+		Name: body.Name,
 	}
 	result := initializers.DB.Create(&company)
 
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to create company",
+		})
 		return
 	}
 
@@ -43,7 +43,9 @@ func GetCompanies(c *gin.Context) {
 	result := initializers.DB.Find(&companies)
 
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to get companies",
+		})
 		return
 	}
 
@@ -57,7 +59,9 @@ func GetCompany(c *gin.Context) {
 	result := initializers.DB.First(&company, c.Param("id"))
 
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to get company",
+		})
 		return
 	}
 
@@ -71,7 +75,9 @@ func UpdateCompany(c *gin.Context) {
 	result := initializers.DB.First(&company, c.Param("id"))
 
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to get company",
+		})
 		return
 	}
 
@@ -84,11 +90,12 @@ func UpdateCompany(c *gin.Context) {
 	}
 
 	result = initializers.DB.Model(&company).Updates(models.Company{
-		Name:          body.Name,
-		ContactPerson: body.ContactPerson,
+		Name: body.Name,
 	})
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to update company",
+		})
 		return
 	}
 
@@ -100,7 +107,9 @@ func UpdateCompany(c *gin.Context) {
 func DeleteCompany(c *gin.Context) {
 	result := initializers.DB.Delete(&models.Company{}, c.Param("id"))
 	if result.Error != nil {
-		c.Status(400)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to delete company",
+		})
 		return
 	}
 

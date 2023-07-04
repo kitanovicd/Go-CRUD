@@ -21,7 +21,7 @@ func main() {
 	r.GET("/companies", controllers.GetCompanies)
 	r.DELETE("/company/:id", controllers.DeleteCompany)
 
-	r.POST("/user", controllers.CreateUser)
+	r.POST("/signup", controllers.SignUp)
 	r.PUT("/user/:id", controllers.UpdateUser)
 	r.GET("/user/:id", controllers.GetUser)
 	r.GET("/users", controllers.GetUsers)
