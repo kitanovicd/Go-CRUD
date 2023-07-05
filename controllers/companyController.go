@@ -8,12 +8,10 @@ import (
 	"github.com/kitanovicd/Go-CRUD/Go-CRUD/models"
 )
 
-type CompanyBody struct {
-	Name string
-}
-
 func CreateCompany(c *gin.Context) {
-	var body CompanyBody
+	var body struct {
+		Name string
+	}
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid body",
@@ -81,7 +79,9 @@ func UpdateCompany(c *gin.Context) {
 		return
 	}
 
-	var body CompanyBody
+	var body struct {
+		Name string
+	}
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid body",
